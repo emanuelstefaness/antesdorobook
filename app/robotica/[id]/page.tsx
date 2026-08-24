@@ -8,10 +8,11 @@ import { BRAND } from "@/config/brand";
 import { ROBOTICS_CONCEPTS, roboticsConceptById } from "@/data/robotics";
 
 export function generateStaticParams() { return ROBOTICS_CONCEPTS.map((concept) => ({ id: concept.id })); }
-export function generateMetadata({ params }: { params: { id: string } }): Metadata { const concept = roboticsConceptById(params.id); return concept ? { title: `${concept.title} — ${BRAND.name}`, description: concept.plain } : { title: `Aula não encontrada — ${BRAND.name}` }; }
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> { const { id } = await params; const concept = roboticsConceptById(id); return concept ? { title: `${concept.title} — ${BRAND.name}`, description: concept.plain } : { title: `Aula não encontrada — ${BRAND.name}` }; }
 
-export default function RoboticsLessonPage({ params }: { params: { id: string } }) {
-  const concept = roboticsConceptById(params.id); if (!concept) notFound();
+export default async function RoboticsLessonPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const concept = roboticsConceptById(id); if (!concept) notFound();
   const previous = ROBOTICS_CONCEPTS[concept.order - 2]; const next = ROBOTICS_CONCEPTS[concept.order];
   return <article className="mx-auto max-w-[1100px] px-5 py-12 md:px-8">
     <header><p className="label-mono text-cyan">Fundamentos de robótica · aula {concept.order} de {ROBOTICS_CONCEPTS.length}</p><h1 className="mt-3 max-w-[22ch] font-display text-[clamp(2.2rem,5vw,3.8rem)] leading-none tracking-display">{concept.title}</h1><p className="mt-4 max-w-[68ch] text-[15px] leading-relaxed text-navy/72">{concept.plain}</p></header>

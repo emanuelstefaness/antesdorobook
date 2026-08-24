@@ -13,15 +13,17 @@ export function generateStaticParams() {
   return PREPARATION_LESSONS.map((lesson) => ({ id: lesson.moduleId }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const formationModule = preparationModuleById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const formationModule = preparationModuleById(id);
   if (!formationModule) return { title: `Formação não encontrada — ${BRAND.name}` };
   return { title: `${formationModule.title} — formação do professor — ${BRAND.name}`, description: formationModule.promise };
 }
 
-export default function FormationModulePage({ params }: { params: { id: string } }) {
-  const formationModule = preparationModuleById(params.id);
-  const lesson = lessonByModuleId(params.id);
+export default async function FormationModulePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const formationModule = preparationModuleById(id);
+  const lesson = lessonByModuleId(id);
   if (!formationModule || !lesson) notFound();
   const next = PREPARATION_MODULES[formationModule.order] ?? null;
 

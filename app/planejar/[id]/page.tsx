@@ -10,14 +10,16 @@ export function generateStaticParams() {
   return LESSON_PLANS.map((plan) => ({ id: plan.id }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const plan = planoPorId(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const plan = planoPorId(id);
   if (!plan) return { title: `Plano não encontrado — ${BRAND.name}` };
   return { title: `${plan.title} — ${BRAND.name}`, description: plan.objective };
 }
 
-export default function LessonPage({ params }: { params: { id: string } }) {
-  const plan = planoPorId(params.id);
+export default async function LessonPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const plan = planoPorId(id);
   if (!plan) notFound();
   const guide = guiaTecnicoPorPlano(plan.id);
 

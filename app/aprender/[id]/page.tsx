@@ -16,8 +16,9 @@ export function generateStaticParams() {
   return CONCEPTS.map((c) => ({ id: c.id }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const conceito = conceitoPorId(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const conceito = conceitoPorId(id);
   if (!conceito) return { title: `Conceito não encontrado — ${BRAND.name}` };
   return { title: `${conceito.title} — ${BRAND.name}`, description: conceito.summary };
 }
@@ -62,8 +63,9 @@ function ponteParaRobotica(id: string): string {
   return pontes[id] ?? "Este conceito ajuda o aluno a planejar, prever, testar e explicar o comportamento de um sistema robótico.";
 }
 
-export default function ConceitoPage({ params }: { params: { id: string } }) {
-  const conceito = conceitoPorId(params.id);
+export default async function ConceitoPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const conceito = conceitoPorId(id);
   if (!conceito) notFound();
 
   const anteriores = conceito.prerequisites

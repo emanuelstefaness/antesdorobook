@@ -10,8 +10,9 @@ import { MAKECODE_CATEGORIES, makeCodeCategoryById } from "@/data/makecodeCatalo
 import { MICROBIT_TECHNICAL_GUIDES } from "@/data/microbitTechnicalGuides";
 
 export function generateStaticParams() { return MAKECODE_CATEGORIES.map((category) => ({ id: category.id })); }
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const category = makeCodeCategoryById(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const category = makeCodeCategoryById(id);
   if (!category) return { title: `Categoria não encontrada — ${BRAND.name}` };
   return { title: `${category.title} no MakeCode — ${BRAND.name}`, description: category.summary };
 }
@@ -40,8 +41,9 @@ const STARTERS: Record<string, Starter> = {
   extensoes: starter("Valide uma extensão pelo exemplo mínimo.", ["pesquisar nome exato do fabricante", "revisar compatibilidade", "adicionar extensão", "abrir exemplo mínimo", "testar uma entrada/saída"], "Nova categoria aparece e exemplo funciona.", "Confira modelo, porta, energia e versão.", "O catálogo é aberto; cada kit exige documentação própria."),
 };
 
-export default function MakeCodeCategoryPage({ params }: { params: { id: string } }) {
-  const category = makeCodeCategoryById(params.id); if (!category) notFound();
+export default async function MakeCodeCategoryPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const category = makeCodeCategoryById(id); if (!category) notFound();
   const workshop = STARTERS[category.id];
   const categoryNames: Record<string, string[]> = {
     basico: ["Básico"], entrada: ["Entrada"], musica: ["Música"], led: ["LED"], radio: ["Rádio"], repeticoes: ["Ciclos"], logica: ["Lógica"], variaveis: ["Variáveis"], matematica: ["Matemática"], funcoes: ["Funções"], listas: ["Matrizes"], texto: ["Texto"], jogos: ["Jogo"], imagens: ["Imagens"], pinos: ["Pinos", "Servo"], serial: ["Serial", "Data Logger"], controle: ["Controle"], bluetooth: ["Bluetooth"], extensoes: ["Extensões", "IA gerada"],

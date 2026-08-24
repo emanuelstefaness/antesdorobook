@@ -13,8 +13,9 @@ export function generateStaticParams() {
   return ACTIVITIES.map((a) => ({ id: a.id }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const atividade = atividadePorId(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const atividade = atividadePorId(id);
   if (!atividade) return { title: `Atividade não encontrada — ${BRAND.name}` };
   return { title: `${atividade.title} — ${BRAND.name}`, description: atividade.summary };
 }
@@ -46,8 +47,9 @@ function Lista({ itens, numerada = false }: { itens: string[]; numerada?: boolea
   );
 }
 
-export default function AtividadePage({ params }: { params: { id: string } }) {
-  const atividade = atividadePorId(params.id);
+export default async function AtividadePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const atividade = atividadePorId(id);
   if (!atividade) notFound();
 
   // As faixas são contíguas na spec, então a lista se lê melhor como intervalo:
