@@ -1,0 +1,89 @@
+{
+  "generated": 100,
+  "overlaps": [
+    {
+      "number": 5,
+      "sourceTitle": "Contador no botão A",
+      "publishedTitle": "Contador no botão A — registro de participação",
+      "matchedExisting": "Contador de pontos com variável"
+    },
+    {
+      "number": 9,
+      "sourceTitle": "Dado eletrônico",
+      "publishedTitle": "Dado eletrônico — aplicação guiada",
+      "matchedExisting": "Dado eletrônico para jogos"
+    },
+    {
+      "number": 11,
+      "sourceTitle": "Pedra, papel e tesoura",
+      "publishedTitle": "Pedra, papel e tesoura — aplicação guiada",
+      "matchedExisting": "Pedra, papel e tesoura na placa"
+    },
+    {
+      "number": 16,
+      "sourceTitle": "Contador de passos",
+      "publishedTitle": "Contador de passos — investigação de movimento",
+      "matchedExisting": "Pedômetro com acelerômetro"
+    },
+    {
+      "number": 18,
+      "sourceTitle": "Alarme de movimento",
+      "publishedTitle": "Alarme de movimento — investigação corporal",
+      "matchedExisting": "Alarme de movimento"
+    },
+    {
+      "number": 29,
+      "sourceTitle": "Alarme de mochila",
+      "publishedTitle": "Alarme de mochila — estudo de sensibilidade e falsos alarmes",
+      "matchedExisting": "Alarme de movimento"
+    },
+    {
+      "number": 31,
+      "sourceTitle": "Jogo da reação rápida",
+      "publishedTitle": "Jogo da reação rápida — laboratório de medição do tempo",
+      "matchedExisting": "Jogo do reflexo"
+    },
+    {
+      "number": 48,
+      "sourceTitle": "Jogo cooperativo por rádio",
+      "publishedTitle": "Jogo cooperativo por rádio — missão com protocolo criado pela turma",
+      "matchedExisting": "Rede cooperativa por rádio"
+    },
+    {
+      "number": 54,
+      "sourceTitle": "Contador de pontos",
+      "publishedTitle": "Contador de pontos — investigação matemática",
+      "matchedExisting": "Contador de pontos com variável"
+    },
+    {
+      "number": 66,
+      "sourceTitle": "Termômetro da sala",
+      "publishedTitle": "Termômetro da sala — comparação de microclimas na mesma sala",
+      "matchedExisting": "Mapa de temperatura da escola"
+    },
+    {
+      "number": 71,
+      "sourceTitle": "Detector de ambiente escuro",
+      "publishedTitle": "Detector de ambiente escuro — calibração de limiar luminoso",
+      "matchedExisting": "Luz noturna automática"
+    },
+    {
+      "number": 75,
+      "sourceTitle": "Medidor de umidade do solo",
+      "publishedTitle": "Medidor de umidade do solo — calibração científica do sensor",
+      "matchedExisting": "Alerta de solo seco"
+    },
+    {
+      "number": 80,
+      "sourceTitle": "Semáforo do barulho",
+      "publishedTitle": "Semáforo do barulho — acordos de autorregulação da turma",
+      "matchedExisting": "Semáforo de ruído"
+    },
+    {
+      "number": 93,
+      "sourceTitle": "Crachá digital",
+      "publishedTitle": "Crachá digital — identidade e comunicação visual",
+      "matchedExisting": "Crachá animado com micro:bit"
+    }
+  ]
+}

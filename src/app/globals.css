@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  html[data-animacoes="reduzidas"] {
+    scroll-behavior: auto;
+  }
+
+  html[data-animacoes="reduzidas"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-cream font-sans text-navy antialiased;
+  }
+
+  /* Portão de acesso. O atributo data-acesso é escrito pelo script bloqueante
+     do layout antes da primeira pintura. Enquanto ele não existir — script com
+     erro, JavaScript desligado — nenhuma das duas regras libera o conteúdo, e
+     o portão continua à vista. Fechado é o padrão correto. */
+  html[data-acesso="liberado"] .portao-de-acesso {
+    display: none;
+  }
+
+  html:not([data-acesso="liberado"]) .conteudo-protegido {
+    display: none;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display font-extrabold tracking-display;
+  }
+
+  :focus-visible {
+    outline: 2px solid #1fc4e6;
+    outline-offset: 3px;
+    border-radius: 3px;
+    /* O halo navy existe por contraste, não por decoração: o ciano puro mede
+       1.82:1 sobre o fundo cream (#F6EFE3), abaixo do piso de 3:1 exigido
+       pela WCAG 2.2 para indicadores de foco não textuais. Com o halo, o
+       anel passa a ter uma borda navy (#0C1D38) de alto contraste contra o
+       cream em qualquer um dos lados — não remover achando que é enfeite. */
+    box-shadow: 0 0 0 4px #0c1d38;
+  }
+}
+
+@layer components {
+  .label-mono {
+    @apply font-mono text-[9.5px] font-bold uppercase tracking-label;
+  }
+
+  .surface-wood {
+    background: linear-gradient(160deg, #D9B27C, #A9773F);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 5px 14px rgba(90, 58, 16, 0.28);
+  }
+}
+
+/*
+ * Impressão do plano de aula. A professora leva a folha para a sala, então
+ * nada que não sirva no papel vai junto: navegação, rodapé, botões e fundos
+ * coloridos saem. Preto sobre branco também gasta menos tinta da escola, que
+ * é uma restrição real de quem imprime material para a turma.
+ */
+@media print {
+  nav,
+  header[class*="bg-navy"],
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /* Uma fase do roteiro cortada ao meio pela quebra de página obriga a
+     professora a virar a folha no meio de uma frase durante a aula. */
+  li,
+  h1,
+  h2,
+  h3 {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  h2,
+  h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  a[href]::after {
+    content: "";
+  }
+}
