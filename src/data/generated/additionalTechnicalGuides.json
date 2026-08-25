@@ -12472,7 +12472,7 @@
       "Abra makecode.microbit.org e crie um Novo Projeto.",
       "Crie somente estas variáveis: `leitura`, `umidade`.",
       "Monte cada PILHA separadamente; o recuo indica encaixe interno.",
-      "Confira a ligação de sensor capacitivo de umidade do solo com a placa desligada."
+      "Confira a ligação do sensor, do módulo MOSFET/driver, da minibomba e da fonte externa com todas as alimentações desligadas."
     ],
     "blocks": [
       {
@@ -12585,31 +12585,50 @@
     "codeNote": "O TypeScript foi organizado a partir das mesmas pilhas. Compare a estrutura com os blocos antes de transferir.",
     "wiring": {
       "kind": "externo",
-      "component": "sensor capacitivo de umidade do solo",
+      "component": "sensor capacitivo de umidade do solo, módulo MOSFET/driver compatível com lógica de 3,3 V, minibomba DC e fonte externa adequada à bomba",
       "connections": [
         {
           "from": "3V",
-          "to": "VCC do módulo",
+          "to": "VCC do sensor de umidade",
           "color": "vermelho",
-          "purpose": "alimentação compatível"
+          "purpose": "alimentação de 3,3 V somente para o sensor"
         },
         {
           "from": "GND",
-          "to": "GND do módulo",
+          "to": "GND do sensor, GND do driver e negativo da fonte externa",
           "color": "preto",
-          "purpose": "referência comum"
+          "purpose": "referência comum entre placa, sensor, driver e fonte"
         },
         {
           "from": "P0",
-          "to": "SIG/AO/DO",
+          "to": "AO/SIG do sensor",
           "color": "amarelo",
           "purpose": "leitura do sensor"
+        },
+        {
+          "from": "P1",
+          "to": "IN/SIG do módulo MOSFET/driver",
+          "color": "azul",
+          "purpose": "comando para ligar e desligar a bomba"
+        },
+        {
+          "from": "positivo da fonte externa",
+          "to": "V+ do módulo e alimentação da bomba conforme os rótulos do fabricante",
+          "color": "vermelho",
+          "purpose": "energia da bomba sem sobrecarregar o micro:bit"
+        },
+        {
+          "from": "saída OUT do módulo",
+          "to": "terminais da minibomba conforme o módulo",
+          "color": "verde",
+          "purpose": "acionamento elétrico da bomba pelo driver"
         }
       ],
       "notes": [
-        "Monte e confira com a placa desligada.",
-        "Nunca aplique sinal de 5 V diretamente a um pino do micro:bit.",
-        "Se houver motor, bomba ou vários LEDs, use fonte e driver adequados com GND comum."
+        "Use sensor compatível com 3,3 V e um módulo MOSFET/driver cuja entrada reconheça lógica de 3,3 V.",
+        "Escolha minibomba e fonte com a mesma tensão nominal e corrente suficiente, seguindo os rótulos do fabricante.",
+        "Nunca conecte a bomba diretamente ao P1 ou ao pino 3V e nunca leve o positivo da fonte externa ao micro:bit.",
+        "Mantenha o GND comum e teste primeiro sem água; depois prenda as mangueiras para evitar vazamentos sobre a eletrônica."
       ]
     },
     "expected": [
@@ -12629,6 +12648,10 @@
       {
         "question": "Como saber se o erro é do código ou da montagem?",
         "answer": "Teste primeiro no simulador e mostre valores intermediários. Se a lógica funciona ali, confira energia, GND, sinal, versão da placa e componente."
+      },
+      {
+        "question": "Por que a bomba não pode ser ligada diretamente ao micro:bit?",
+        "answer": "A bomba exige mais corrente e pode usar tensão diferente da placa. O P1 envia apenas o sinal de controle para o módulo MOSFET/driver; a fonte externa fornece a energia da bomba."
       }
     ],
     "diagnostics": [
@@ -12655,6 +12678,12 @@
         "cause": "Pausa longa, laço sem saída ou envio/rolagem excessiva.",
         "check": "Procure pausas e laços na pilha que estava executando.",
         "fix": "Reduza a pausa, garanta que a condição muda e mostre textos mais curtos."
+      },
+      {
+        "symptom": "O sensor mede, o ícone muda, mas a bomba não liga",
+        "cause": "Fonte incompatível ou desligada, GND não comum, P1 fora da entrada do driver ou bomba conectada no terminal errado.",
+        "check": "Com tudo desligado, confirme P1 → IN/SIG, GND comum, tensão nominal da bomba e os terminais V+/OUT do módulo. Depois teste a saída por três segundos.",
+        "fix": "Corrija uma ligação por vez, use fonte compatível e nunca tente resolver alimentando a bomba pelo micro:bit."
       }
     ],
     "sourceNumber": 76,

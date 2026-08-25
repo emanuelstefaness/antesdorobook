@@ -15,6 +15,10 @@ export function EsquemaDeLigacao({ wiring }: { wiring: GuiaTecnicoMicrobit["wiri
 
   return (
     <div className="mt-4 overflow-hidden rounded-card-sm border border-navy/10 bg-white">
+      <div className="border-b border-coral/20 bg-coral/8 px-4 py-3">
+        <p className="label-mono text-coral">Item externo — precisa ser providenciado</p>
+        <p className="mt-1 text-[12.5px] font-bold text-navy">{wiring.component}</p>
+      </div>
       <div className="flex items-center gap-3 bg-navy px-4 py-3 text-white"><Cpu size={20} aria-hidden /><span className="font-bold">micro:bit</span><Cable size={18} className="ml-auto text-cyan" aria-hidden /><span className="max-w-[50%] text-right text-[12px] font-bold">{wiring.component}</span></div>
       <ol className="divide-y divide-navy/8">
         {wiring.connections.map((connection) => (

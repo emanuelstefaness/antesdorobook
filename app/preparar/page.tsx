@@ -41,6 +41,7 @@ export default function PrepararPage() {
             [Cpu, "Conhecendo o micro:bit", "Entenda cada parte da placa, o que ela percebe, processa, mostra e comunica.", "/microbit", "text-amber"],
             [Blocks, "MakeCode completo", "Conheça cada categoria e bloco, pratique e descubra em quais aulas utilizar.", "/makecode", "text-green"],
           ].map(([Icon, title, text, href, color], index) => { const StageIcon = Icon as typeof BookOpen; return <li key={href as string} className="grid"><Link href={href as string} className="group flex min-h-[240px] flex-col rounded-card border border-navy/8 bg-white p-5 shadow-card transition hover:-translate-y-1 hover:border-cyan"><div className="flex items-center justify-between"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-navy/6"><StageIcon size={20} className={color as string}/></span><span className="label-mono text-navy/45">Etapa {index + 1}</span></div><h3 className="mt-5 text-[19px] group-hover:underline">{title as string}</h3><p className="mt-2 text-[12.5px] leading-relaxed text-navy/65">{text as string}</p><span className="mt-auto flex items-center gap-2 pt-5 text-[11px] font-bold">Abrir etapa <ArrowRight size={13}/></span></Link></li>; })}</ol>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-card bg-navy p-5 text-white shadow-panel"><div><p className="label-mono text-cyan">Professor totalmente iniciante</p><h3 className="mt-2 text-[20px] text-white">Não escolha: comece pelo primeiro módulo.</h3><p className="mt-2 text-[12.5px] text-white/65">O portal conduz você da explicação simples até o ensaio de uma aula.</p></div><Link href={`/preparar/${PREPARATION_MODULES[0].id}`} className="inline-flex min-h-[44px] items-center gap-2 rounded-pill bg-coral px-5 text-[12px] font-bold text-white">Começar agora <ArrowRight size={14}/></Link></div>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
@@ -64,7 +65,9 @@ export default function PrepararPage() {
           </Card>
         </div>
 
-        <div className="mt-12 grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
+        <details className="mt-12 rounded-card border border-navy/10 bg-white p-5 shadow-card md:p-6">
+          <summary className="cursor-pointer list-none"><span className="label-mono text-cyan">Diagnóstico opcional</span><strong className="mt-2 block font-display text-[22px]">Já sabe alguma coisa? Confira sua prontidão</strong><span className="mt-2 block max-w-[68ch] text-[12.5px] leading-relaxed text-navy/60">Se você está começando do zero, pode ignorar este diagnóstico e seguir os módulos. Abra apenas para descobrir quais conteúdos precisa revisar.</span></summary>
+        <div className="mt-8 grid gap-6 xl:grid-cols-[1.35fr_.65fr]">
           <div>
             <p className="label-mono text-cyan">Antes de começar a formação</p>
             <h2 className="mt-2 max-w-[22ch] font-display text-[clamp(26px,3vw,40px)] font-extrabold leading-[1.02] tracking-display">
@@ -130,6 +133,7 @@ export default function PrepararPage() {
             </Card>
           </aside>
         </div>
+        </details>
 
         <div className="mt-14 grid max-w-[960px] gap-3">
           <div className="mb-3">

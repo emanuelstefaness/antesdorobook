@@ -6116,7 +6116,7 @@
     "preparation": [
       "Faça primeiro o programa completo de “Regador automático” e teste cada pilha separadamente no simulador.",
       "Teste cabo USB de dados, pilhas e a transferência do arquivo .hex.",
-      "Monte uma unidade de referência com sensor capacitivo de umidade do solo e fotografe cada conexão antes da aula.",
+      "Monte uma unidade de referência com sensor capacitivo de umidade do solo, módulo MOSFET/driver compatível com lógica de 3,3 V, minibomba DC e fonte externa adequada à bomba. Fotografe cada conexão antes da aula.",
       "Crie somente estas variáveis: `leitura`, `umidade`. Categorias utilizadas: Avançado → Pinos, Variáveis, Matemática, Lógica e Básico.."
     ],
     "intro": "Mostre o resultado de “Regador automático” funcionando, sem revelar os blocos. Esta atividade amplia o catálogo existente com uma aplicação que ainda não estava disponível.",

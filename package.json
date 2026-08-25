@@ -6,11 +6,13 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/devPreview.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --ignore-pattern .next --ignore-pattern dist",
     "test": "vitest run",
+    "audit:hardware": "vite-node scripts/auditHardware.ts",
+    "audit:lessons": "vite-node scripts/auditLessons.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

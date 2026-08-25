@@ -1,6 +1,7 @@
 import { CONCEPTS } from "./concepts";
 import type { LessonPlan } from "./lessonPlans";
 import type { GuiaTecnicoMicrobit } from "./microbitTechnicalGuides";
+import { technicalRequirementsFor } from "./technicalRequirements";
 import type { Duration, Material } from "./types";
 
 export type QuestionAnswer = { question: string; answer: string };
@@ -43,20 +44,83 @@ function unique(items: string[]) {
   return [...new Set(items.map((item) => item.trim()).filter(Boolean))];
 }
 
-function materialDetails(plan: LessonPlan): MaterialDetail[] {
-  return plan.materials.map((material) => ({
+function technicalExplanation(plan: LessonPlan, guide?: GuiaTecnicoMicrobit) {
+  if (!guide) return plan.explanation;
+  const input = guide.answers.find((item) => /entrada/i.test(item.question))?.answer;
+  const processing = guide.answers.find((item) => /programa faz|processamento/i.test(item.question))?.answer;
+  const output = guide.answers.find((item) => /saída/i.test(item.question))?.answer;
+  const categories = unique(guide.blocks.map((item) => item.category)).join(", ");
+  return [
+    "Explique em três partes, antes de mostrar o programa pronto.",
+    input,
+    processing,
+    output,
+    "Depois abra no MakeCode somente as categorias usadas nesta aula: " + categories + ".",
+    "Mostre um bloco por vez e peça que a turma preveja o resultado antes do teste.",
+  ].filter(Boolean).join(" ");
+}
+
+function teacherActionFor(
+  plan: LessonPlan,
+  guide: GuiaTecnicoMicrobit | undefined,
+  field: "intro" | "triggerQuestion" | "explanation" | "investigation" | "construction" | "test" | "debug" | "sharing",
+) {
+  if (!guide) return plan[field];
+  if (field === "explanation") return technicalExplanation(plan, guide);
+  if (field === "construction") {
+    return plan.construction + " Conduza os " + guide.blocks.length
+      + " passos do guia na ordem numérica. Pare depois de cada pilha sem recuo, teste-a e só então comece a próxima.";
+  }
+  if (field === "test") {
+    return plan.test + " Confirme explicitamente este resultado: " + guide.expected.join(" ");
+  }
+  if (field === "debug") {
+    const first = guide.diagnostics[0];
+    return plan.debug + " Comece pelo sintoma “" + first.symptom + "”: " + first.check + " " + first.fix;
+  }
+  return plan[field];
+}
+
+function materialDetails(plan: LessonPlan, guide?: GuiaTecnicoMicrobit): MaterialDetail[] {
+  const materials = plan.materials.map((material) => ({
     ...MATERIAL[material],
     use: material === "nenhum"
       ? `Realizar ${plan.title.toLowerCase()} sem depender de equipamento específico.`
       : `Usado na investigação, construção ou registro da aula “${plan.title}”.`,
   }));
+
+  if (!guide) return materials;
+
+  const requirements = technicalRequirementsFor(guide);
+  const board = requirements.find((item) => item.kind === "placa");
+  const microbit = materials.find((item) => item.name === "BBC micro:bit");
+  if (board && microbit) {
+    microbit.name = board.item;
+    microbit.quantity = board.quantity;
+    microbit.use = board.purpose;
+    microbit.caution = board.caution;
+  }
+
+  for (const requirement of requirements.filter((item) => item.kind !== "placa")) {
+    materials.push({
+      name: requirement.kind === "componente"
+        ? `Componente externo obrigatório: ${requirement.item}`
+        : requirement.item,
+      quantity: requirement.quantity,
+      use: requirement.purpose,
+      caution: requirement.caution,
+    });
+  }
+
+  return materials;
 }
 
 export function buildLessonSupport(plan: LessonPlan, guide?: GuiaTecnicoMicrobit) {
   const concepts = plan.concepts.map((id) => CONCEPTS.find((concept) => concept.id === id)).filter((item): item is NonNullable<typeof item> => Boolean(item));
+  const explanation = technicalExplanation(plan, guide);
   const readiness: QuestionAnswer[] = [
     { question: `O que os alunos devem compreender na aula “${plan.title}”?`, answer: plan.objective },
-    { question: `Como você explicaria ${plan.theme.toLowerCase()} sem mostrar a solução pronta?`, answer: plan.explanation },
+    { question: `Como você explicaria ${plan.theme.toLowerCase()} sem mostrar a solução pronta?`, answer: explanation },
     guide
       ? { question: "Qual evento inicia o programa e qual saída deve aparecer?", answer: `O programa começa por ${guide.blocks.filter((block) => (block.indent ?? 0) === 0).map((block) => `“${block.block}”`).join(", ")}. O resultado esperado inclui: ${guide.expected[0]}` }
       : { question: "Como a turma comprovará que a solução funciona?", answer: plan.test },
@@ -74,7 +138,7 @@ export function buildLessonSupport(plan: LessonPlan, guide?: GuiaTecnicoMicrobit
   const timeline: TimelineRow[] = PHASES.map(([title, field, students, evidence], index) => ({
     time: `${TIMES[plan.duration][index]} min`,
     title,
-    teacher: plan[field],
+    teacher: teacherActionFor(plan, guide, field),
     students,
     evidence,
   }));
@@ -86,7 +150,7 @@ export function buildLessonSupport(plan: LessonPlan, guide?: GuiaTecnicoMicrobit
     "O que mudaria se alterássemos uma regra ou uma etapa da solução?",
     "Qual alteração melhoraria o projeto sem mudar o objetivo da aula?",
   ]).map((question) => {
-    if (question === plan.triggerQuestion) return { question, answer: plan.explanation };
+    if (question === plan.triggerQuestion) return { question, answer: explanation };
     const technical = guide?.answers.find((item) => item.question === question);
     if (technical) return technical;
     if (question.startsWith("Como podemos provar")) return { question, answer: plan.test };
@@ -142,7 +206,7 @@ export function buildLessonSupport(plan: LessonPlan, guide?: GuiaTecnicoMicrobit
     everyday: plan.dailyLife ?? `A aula transforma ${plan.theme.toLowerCase()} em uma situação concreta de previsão, decisão, teste e explicação — habilidades usadas para organizar tarefas e resolver problemas reais.`,
     concepts,
     readiness,
-    materials: materialDetails(plan),
+    materials: materialDetails(plan, guide),
     preparation,
     rehearsal: [
       `Consigo explicar o objetivo com palavras simples: ${plan.objective}`,
@@ -152,7 +216,10 @@ export function buildLessonSupport(plan: LessonPlan, guide?: GuiaTecnicoMicrobit
       "Separei uma pergunta de abertura, uma evidência para observar e uma continuidade.",
     ],
     timeline,
-    teacherTalk: plan.teacherTalk ?? ["O que vocês esperam que aconteça?", "Qual foi a última etapa que funcionou?", "O que podemos mudar sem refazer tudo?"],
+    teacherTalk: unique([
+      ...(plan.teacherTalk ?? ["O que vocês esperam que aconteça?", "Qual foi a última etapa que funcionou?", "O que podemos mudar sem refazer tudo?"]),
+      ...(guide?.answers.slice(0, 3).map((item) => item.question) ?? []),
+    ]),
     questions,
     adaptations,
     rubric,

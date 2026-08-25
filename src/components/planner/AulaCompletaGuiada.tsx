@@ -1,9 +1,10 @@
 import Link from "next/link";
-import { CheckCircle2, Sparkles, TriangleAlert, Wrench } from "lucide-react";
+import { CheckCircle2, CircuitBoard, Clock3, Laptop, PackageCheck, Sparkles, TriangleAlert, Wrench } from "lucide-react";
 import type { LessonPlan } from "@/data/lessonPlans";
 import { NOMES_DAS_TURMAS, NOMES_DOS_NIVEIS_DE_PLANO } from "@/data/lessonPlans";
 import type { GuiaTecnicoMicrobit as Guia } from "@/data/microbitTechnicalGuides";
 import { buildLessonSupport } from "@/data/lessonSupport";
+import { guideUsesRadio } from "@/data/technicalRequirements";
 import { BotaoFavorito } from "@/components/support/BotaoFavorito";
 import { MarcarLido } from "@/components/content/MarcarLido";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +25,10 @@ export function AulaCompletaGuiada({ plan, guide, path, total }: { plan: LessonP
   const lastYear = plan.ageBands[plan.ageBands.length - 1].split("-")[1];
   const years = firstYear === lastYear ? `${firstYear}º ano` : `do ${firstYear}º ao ${lastYear}º ano`;
   const support = buildLessonSupport(plan, guide);
+  const externalComponent = guide?.wiring.kind === "externo" ? guide.wiring.component : null;
+  const boardCount = guide && guideUsesRadio(guide) ? "2 micro:bits por grupo" : plan.needsMicrobit ? "1 micro:bit por grupo" : "Não usa micro:bit";
+  const preparationMinutes = plan.level === "avancado" ? 40 : plan.level === "intermediario" ? 25 : 15;
+  const finalResult = guide?.expected[0] ?? plan.test;
 
   const aprender = <>
     <Heading eyebrow="Etapa 1 · Aprenda" title="Entenda o conteúdo antes de explicar" description="Leia o sentido pedagógico, revise os conceitos relacionados e responda ao teste de prontidão. Não avance enquanto ainda precisar ler a definição para explicar."/>
@@ -31,7 +36,7 @@ export function AulaCompletaGuiada({ plan, guide, path, total }: { plan: LessonP
       <div className="rounded-card border border-purple/20 bg-purple/8 p-5"><h3 className="font-display text-[19px] font-extrabold">Por que esta aula é importante</h3><p className="mt-3 text-[13.5px] leading-relaxed text-navy/72">{plan.whyApply ?? `Esta aula transforma ${plan.theme.toLowerCase()} em uma experiência concreta de previsão, construção, teste e correção.`}</p><p className="mt-3 border-l-2 border-purple pl-3 text-[12.5px] leading-relaxed text-navy/65"><strong>No cotidiano:</strong> {support.everyday}</p></div>
       <div className="rounded-card border border-cyan/20 bg-cyan/8 p-5"><h3 className="font-display text-[19px] font-extrabold">O que saber antes de começar</h3><p className="mt-2 text-[12.5px] leading-relaxed text-navy/65">Abra qualquer item que ainda não consiga explicar com um exemplo próprio.</p><ul className="mt-4 grid gap-2">{(plan.teacherPrerequisites ?? plan.relatedContent.slice(0, 3)).map((item) => <li key={item.href}><Link href={item.href} className="inline-flex min-h-[34px] items-center text-[13px] font-bold text-navy underline">Professor: {item.label}</Link></li>)}</ul><p className="mt-4 label-mono text-cyan">Os alunos precisam</p><ul className="mt-2 grid gap-1.5 text-[12.5px] leading-relaxed text-navy/68">{(plan.studentPrerequisites ?? ["Conseguir seguir uma sequência curta", "Registrar uma previsão antes do teste", "Nenhuma experiência técnica anterior nas aulas iniciantes"]).map((item) => <li key={item}>• {item}</li>)}</ul></div>
     </section>
-    <section className="mt-7 max-w-[1050px]"><h3 className="font-display text-[20px] font-extrabold">Conceitos que o professor precisa dominar</h3><div className="mt-4 grid gap-4 md:grid-cols-2">{support.concepts.map((concept) => <article key={concept.id} className="rounded-card-sm border border-navy/8 bg-white p-5 shadow-card"><div className="flex flex-wrap items-start justify-between gap-3"><h4 className="font-display text-[17px] font-extrabold">{concept.title}</h4><Link href={`/aprender/${concept.id}`} className="text-[10.5px] font-bold text-navy underline">Abrir explicação completa</Link></div><p className="mt-3 text-[12.5px] leading-relaxed text-navy/70">{concept.summary}</p><p className="mt-3 border-l-2 border-cyan pl-3 text-[12px] leading-relaxed text-navy/62"><strong>Como explicar:</strong> {concept.howToExplain}</p></article>)}</div></section>
+    <section className="mt-7 max-w-[1050px]"><h3 className="font-display text-[20px] font-extrabold">Conceitos que sustentam esta aula</h3><p className="mt-2 text-[12.5px] leading-relaxed text-navy/60">Abra somente aquilo que ainda não consegue explicar com um exemplo próprio.</p><div className="mt-4 grid gap-3 md:grid-cols-2">{support.concepts.map((concept) => <details key={concept.id} className="rounded-card-sm border border-navy/8 bg-white p-5 shadow-card"><summary className="cursor-pointer list-none font-display text-[17px] font-extrabold">{concept.title}<span className="mt-1 block font-sans text-[11px] font-bold text-cyan">Revisar explicação</span></summary><p className="mt-4 text-[12.5px] leading-relaxed text-navy/70">{concept.summary}</p><p className="mt-3 border-l-2 border-cyan pl-3 text-[12px] leading-relaxed text-navy/62"><strong>Como explicar:</strong> {concept.howToExplain}</p><Link href={`/aprender/${concept.id}`} className="mt-4 inline-flex text-[11px] font-bold text-navy underline">Estudar o conceito completo</Link></details>)}</div></section>
     <ProntidaoDaAula items={support.readiness}/>
   </>;
 
@@ -61,5 +66,35 @@ export function AulaCompletaGuiada({ plan, guide, path, total }: { plan: LessonP
     <nav className="mt-8 flex max-w-[1120px] flex-wrap gap-3 border-t border-navy/10 pt-7 no-print">{path?.previous ? <Button href={`/planejar/${path.previous.id}`} variant="secondary">Anterior: {path.previous.title}</Button> : null}{path?.next ? <Button href={`/planejar/${path.next.id}`}>Próxima: {path.next.title}</Button> : <Button href="/aulas">Escolher outra aula</Button>}<Button href="/aulas/caminho" variant="secondary">Ver caminho completo</Button></nav>
   </>;
 
-  return <article className="mx-auto max-w-[1400px] px-5 py-12"><header><div className="flex flex-wrap items-center gap-2"><span className="label-mono text-purple">Plano completo · padrão do portal</span><span className="rounded-pill bg-cyan/10 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-label text-cyan">Aprenda → Prepare → Aplique → Avalie</span></div><h1 className="mt-3 max-w-[24ch] font-display text-[clamp(2rem,4.6vw,3.2rem)] leading-none tracking-display">{plan.title}</h1><p className="mt-4 max-w-[65ch] text-[15px] leading-relaxed text-navy/80">{support.promise}</p><p className="mt-4 max-w-[70ch] border-l-2 border-cyan pl-3 text-[13px] leading-relaxed text-navy/65"><strong>Aplicação real:</strong> {support.everyday}</p><p className="mt-4 text-[13px] text-navy/70"><strong>{plan.duration} minutos</strong> · {years} · {NOMES_DAS_TURMAS[plan.classSize]} · {NOMES_DOS_NIVEIS_DE_PLANO[plan.level]}</p><div className="mt-6 flex flex-wrap items-center gap-3 no-print"><BotaoImprimir/><BotaoFavorito kind="plano" id={plan.id}/><Button href="/planejar" variant="secondary">Encontrar outra aula</Button><MarcarLido id={`planejar:${plan.id}`} rotulo="Aula concluída"/></div>{path ? <p className="mt-4 label-mono text-purple">Aula {path.position} de {total} no caminho recomendado</p> : null}</header><EtapasGuiadas aprender={aprender} preparar={preparar} aplicar={aplicar} avaliar={avaliar}/></article>;
+  return (
+    <article className="mx-auto max-w-[1400px] px-5 py-12">
+      <header>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="label-mono text-purple">Plano completo · padrão do portal</span>
+          <span className="rounded-pill bg-cyan/10 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-label text-cyan">Aprenda → Prepare → Aplique → Avalie</span>
+        </div>
+        <h1 className="mt-3 max-w-[24ch] font-display text-[clamp(2rem,4.6vw,3.2rem)] leading-none tracking-display">{plan.title}</h1>
+        <p className="mt-4 max-w-[65ch] text-[15px] leading-relaxed text-navy/80">{support.promise}</p>
+        <p className="mt-4 text-[13px] text-navy/70"><strong>{plan.duration} minutos</strong> · {years} · {NOMES_DAS_TURMAS[plan.classSize]} · {NOMES_DOS_NIVEIS_DE_PLANO[plan.level]}</p>
+        <div className="mt-6 flex flex-wrap items-center gap-3 no-print"><BotaoImprimir/><BotaoFavorito kind="plano" id={plan.id}/><Button href="/planejar" variant="secondary">Encontrar outra aula</Button><MarcarLido id={`planejar:${plan.id}`} rotulo="Aula concluída"/></div>
+        {path ? <p className="mt-4 label-mono text-purple">Aula {path.position} de {total} no caminho recomendado</p> : null}
+      </header>
+
+      <section className="mt-8 rounded-card border border-navy/10 bg-white p-5 shadow-card md:p-6">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div><p className="label-mono text-cyan">Confira antes de começar</p><h2 className="mt-2 font-display text-[24px] font-extrabold">Consigo aplicar esta aula?</h2></div>
+          <a href="#etapas-da-aula" className="inline-flex min-h-[40px] items-center rounded-pill bg-navy px-4 text-[11px] font-bold text-white">Ir para o passo a passo</a>
+        </div>
+        <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="rounded-card-sm bg-purple/8 p-4"><PackageCheck size={19} className="text-purple"/><p className="mt-3 label-mono text-navy/50">Resultado final</p><p className="mt-2 text-[12.5px] leading-relaxed text-navy/72">{finalResult}</p></div>
+          <div className={`rounded-card-sm p-4 ${externalComponent ? "bg-amber/12" : "bg-green/8"}`}><CircuitBoard size={19} className={externalComponent ? "text-amber" : "text-green"}/><p className="mt-3 label-mono text-navy/50">Material decisivo</p><p className="mt-2 text-[13px] font-bold">{externalComponent ? externalComponent : plan.needsBoard ? "Tabuleiro Antes do Robô" : plan.needsMicrobit ? "Somente recursos da placa" : "Sem equipamento eletrônico"}</p>{externalComponent ? <p className="mt-2 text-[11.5px] leading-relaxed text-coral">Componente externo obrigatório: providencie antes da aula.</p> : null}</div>
+          <div className="rounded-card-sm bg-cyan/8 p-4"><Laptop size={19} className="text-cyan"/><p className="mt-3 label-mono text-navy/50">Tecnologia necessária</p><p className="mt-2 text-[13px] font-bold">{boardCount}</p><p className="mt-2 text-[11.5px] leading-relaxed text-navy/62">{plan.needsComputer ? "Precisa de computador com MakeCode." : "Não precisa de computador."}</p></div>
+          <div className="rounded-card-sm bg-navy/5 p-4"><Clock3 size={19} className="text-navy"/><p className="mt-3 label-mono text-navy/50">Preparo do professor</p><p className="mt-2 text-[13px] font-bold">Reserve cerca de {preparationMinutes} minutos</p><p className="mt-2 text-[11.5px] leading-relaxed text-navy/62">Execute uma vez antes da turma e deixe o resultado esperado pronto.</p></div>
+        </div>
+        <p className="mt-5 border-l-2 border-cyan pl-3 text-[12.5px] leading-relaxed text-navy/65"><strong>Por que aplicar:</strong> {support.everyday}</p>
+      </section>
+
+      <EtapasGuiadas aprender={aprender} preparar={preparar} aplicar={aplicar} avaliar={avaliar}/>
+    </article>
+  );
 }

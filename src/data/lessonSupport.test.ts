@@ -47,4 +47,25 @@ describe("modelo completo das 150 aulas", () => {
       expect(guide!.diagnostics.length, `${plan.id}.diagnostics`).toBeGreaterThan(2);
     }
   });
+
+  it("explicita os itens que não existem dentro do micro:bit", () => {
+    for (const plan of LESSON_PLANS) {
+      const guide = guiaTecnicoPorPlano(plan.id);
+      if (guide?.wiring.kind !== "externo") continue;
+
+      const support = buildLessonSupport(plan, guide);
+      const required = support.materials.find((item) =>
+        item.name.startsWith("Componente externo obrigatório:"),
+      );
+
+      expect(required, plan.id).toBeDefined();
+      expect(required!.name, plan.id).toContain(guide.wiring.component);
+      expect(required!.quantity, plan.id).toContain("por grupo");
+      expect(required!.use, plan.id).toContain("não existe dentro do micro:bit");
+      expect(
+        support.materials.some((item) => item.name === "Cabos e conectores compatíveis"),
+        plan.id,
+      ).toBe(true);
+    }
+  });
 });

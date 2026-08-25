@@ -11,8 +11,13 @@ export function generateStaticParams() {
   return TRAILS.map((t) => ({ id: t.id }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const trilha = trilhaPorId(params.id);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const trilha = trilhaPorId(id);
   if (!trilha) return { title: `Trilha não encontrada — ${BRAND.name}` };
   return { title: `${trilha.title} — ${BRAND.name}`, description: trilha.willLearn };
 }
@@ -38,8 +43,13 @@ function Lista({ itens, numerada = false }: { itens: string[]; numerada?: boolea
   );
 }
 
-export default function TrilhaPage({ params }: { params: { id: string } }) {
-  const trilha = trilhaPorId(params.id);
+export default async function TrilhaPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const trilha = trilhaPorId(id);
   if (!trilha) notFound();
 
   const assuntos = assuntosDaTrilha(trilha.id);

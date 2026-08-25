@@ -1,4 +1,5 @@
 import generatedTechnicalGuides from "./generated/additionalTechnicalGuides.json";
+import { correctAdditionalTechnicalGuide } from "./technicalGuideCorrections";
 
 export type CategoriaMakeCode =
   | "Básico"
@@ -202,11 +203,23 @@ const RECEITAS = {
   ),
   distancia: base(
     "Alerta por distância",
-    blocos(["Básico", "para sempre", "pilha principal"], ["Pinos", "ler distância em centímetros (extensão do kit)", "primeiro bloco dentro de ‘para sempre’", 1], ["Lógica", "se distância < 10 / senão se < 25 / senão", "abaixo da leitura", 1], ["Básico", "mostrar X / atenção / feliz", "um ícone em cada ramo", 2]),
-    "// O bloco e o TypeScript mudam conforme o sensor/kit.\n// Instale somente a extensão indicada pelo fabricante.\n// Estrutura: medir cm → comparar < 10, < 25 → mostrar três alertas.",
+    blocos(
+      ["Variáveis", "criar variável distancia", "crie antes de montar"],
+      ["Básico", "para sempre", "pilha principal"],
+      ["Pinos", "escrita digital P1 para 0", "dentro de ‘para sempre’", 1],
+      ["Controle", "aguardar 2 microssegundos", "abaixo da escrita 0", 1],
+      ["Pinos", "escrita digital P1 para 1", "abaixo da espera", 1],
+      ["Controle", "aguardar 10 microssegundos", "abaixo da escrita 1", 1],
+      ["Pinos", "escrita digital P1 para 0", "abaixo da segunda espera", 1],
+      ["Variáveis", "definir distancia para duração do pulso alto em P2 ÷ 58", "abaixo do pulso de disparo", 1],
+      ["Lógica", "se distancia < 10 / senão se distancia < 25 / senão", "abaixo da medição", 1],
+      ["Básico", "mostrar X / atenção / feliz", "um ícone em cada ramo", 2],
+      ["Básico", "pausa 100 ms", "depois da condição", 1],
+    ),
+    "let distancia = 0\nbasic.forever(function () {\n  pins.digitalWritePin(DigitalPin.P1, 0)\n  control.waitMicros(2)\n  pins.digitalWritePin(DigitalPin.P1, 1)\n  control.waitMicros(10)\n  pins.digitalWritePin(DigitalPin.P1, 0)\n  distancia = pins.pulseIn(DigitalPin.P2, PulseValue.High, 25000) / 58\n  if (distancia > 0 && distancia < 10) basic.showIcon(IconNames.No)\n  else if (distancia > 0 && distancia < 25) basic.showIcon(IconNames.Surprised)\n  else basic.showIcon(IconNames.Happy)\n  basic.pause(100)\n})",
     ["Objeto a menos de 10 cm mostra X; de 10 a 24 cm mostra atenção; a 25 cm ou mais mostra feliz.", "A leitura muda suavemente quando o objeto se aproxima de frente."],
-    [{ question: "Por que não há código universal?", answer: "Sensores ultrassônicos e placas adaptadoras usam extensões, pinos e tensão diferentes; copiar código de outro modelo pode falhar ou ser inseguro." }, { question: "Como escolher as faixas?", answer: "Meça a maquete real e defina limites sem sobreposição nem intervalo vazio." }],
-    { codeNote: "Receita visual completa; o trecho copiável depende do modelo exato do sensor. Use a extensão do fabricante.", extensions: ["Extensão fornecida pelo fabricante do sensor/kit"], wiring: { kind: "externo", component: "sensor de distância compatível com micro:bit/3 V", connections: [{ from: "3V ou fonte do kit", to: "VCC do sensor", color: "vermelho", purpose: "alimentação conforme fabricante" }, { from: "GND", to: "GND do sensor", color: "preto", purpose: "referência comum" }, { from: "P1", to: "TRIG/SIG conforme o módulo", color: "amarelo", purpose: "disparo ou sinal" }, { from: "P2", to: "ECHO, apenas se o módulo for 3 V", color: "azul", purpose: "retorno da medida" }], notes: ["Não ligue ECHO de 5 V diretamente ao micro:bit.", "Se o seu kit usa placa adaptadora, siga os conectores rotulados nessa placa.", "Confira o modelo impresso no sensor antes de energizar."] } },
+    [{ question: "Por que o código divide a duração por 58?", answer: "O pulso mede o tempo de ida e volta do som. Para esse sensor, dividir o tempo em microssegundos por aproximadamente 58 converte a leitura em centímetros." }, { question: "Como escolher as faixas?", answer: "Meça a maquete real e defina limites sem sobreposição nem intervalo vazio." }],
+    { codeNote: "Código completo para o modelo HC-SR04P alimentado em 3,3 V. Não substitua pelo HC-SR04 clássico de 5 V sem adaptação elétrica.", wiring: { kind: "externo", component: "sensor ultrassônico HC-SR04P compatível com alimentação de 3,3 V", connections: [{ from: "3V", to: "VCC do HC-SR04P", color: "vermelho", purpose: "alimentação em 3,3 V" }, { from: "GND", to: "GND do HC-SR04P", color: "preto", purpose: "referência comum" }, { from: "P1", to: "TRIG", color: "amarelo", purpose: "pulso de disparo" }, { from: "P2", to: "ECHO do modelo HC-SR04P 3,3 V", color: "azul", purpose: "retorno da medida" }], notes: ["Confirme que está escrito HC-SR04P e que o módulo aceita alimentação e lógica de 3,3 V.", "Não ligue o ECHO de um HC-SR04 clássico de 5 V diretamente ao micro:bit.", "Monte e confira todas as conexões com a placa desligada."] } },
   ),
   ia: base(
     "Classificador de gestos no micro:bit CreateAI",
@@ -248,10 +261,11 @@ const MAPA: Record<string, keyof typeof RECEITAS> = {
   "radio-cooperativo-em-sala": "radio",
 };
 
-export const ADDITIONAL_TECHNICAL_GUIDES = generatedTechnicalGuides as unknown as GuiaTecnicoMicrobit[];
+export const ADDITIONAL_TECHNICAL_GUIDES = (generatedTechnicalGuides as unknown as GuiaTecnicoMicrobit[])
+  .map(correctAdditionalTechnicalGuide);
 
 export const MICROBIT_TECHNICAL_GUIDES: GuiaTecnicoMicrobit[] = [
-  ...Object.entries(MAPA).map(([id, recipe]) => ({ id, ...RECEITAS[recipe] })),
+  ...Object.entries(MAPA).map(([id, recipe]) => correctAdditionalTechnicalGuide({ id, ...RECEITAS[recipe] })),
   ...ADDITIONAL_TECHNICAL_GUIDES,
 ];
 

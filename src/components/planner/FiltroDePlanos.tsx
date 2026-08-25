@@ -14,6 +14,7 @@ import {
 } from "@/data/lessonPlans";
 import type { AgeBand, Duration } from "@/data/types";
 import { MICROBIT_TECHNICAL_GUIDES } from "@/data/microbitTechnicalGuides";
+import { guideUsesRadio } from "@/data/technicalRequirements";
 
 const ANOS: Array<{ valor: AgeBand; rotulo: string }> = [
   { valor: "2-3", rotulo: "2º e 3º" },
@@ -30,6 +31,7 @@ const ANOS: Array<{ valor: AgeBand; rotulo: string }> = [
 const TEMPOS: Duration[] = [...new Set(LESSON_PLANS.map((p) => p.duration))].sort((a, b) => a - b);
 
 type Recurso = "sem-computador" | "tabuleiro" | "microbit";
+type PerfilRapido = "primeira-aula" | "um-microbit" | "sem-extras" | "aula-amanha" | "avancado";
 
 const RECURSOS: Array<{ valor: Recurso; rotulo: string }> = [
   { valor: "sem-computador", rotulo: "Sem computador" },
@@ -39,6 +41,13 @@ const RECURSOS: Array<{ valor: Recurso; rotulo: string }> = [
 
 const MAKECODE_CATEGORIES = [...new Set(MICROBIT_TECHNICAL_GUIDES.flatMap((guide) => guide.blocks.map((block) => block.category)))].sort();
 const GUIDE_BY_ID = new Map(MICROBIT_TECHNICAL_GUIDES.map((guide) => [guide.id, guide]));
+const PERFIS_RAPIDOS: Array<{ valor: PerfilRapido; titulo: string; texto: string }> = [
+  { valor: "primeira-aula", titulo: "Nunca usei micro:bit", texto: "Aulas iniciais e sem montagem externa" },
+  { valor: "um-microbit", titulo: "Tenho somente 1 micro:bit", texto: "Exclui atividades que exigem duas placas" },
+  { valor: "sem-extras", titulo: "Não tenho componentes externos", texto: "Usa materiais comuns ou recursos da placa" },
+  { valor: "aula-amanha", titulo: "Tenho uma aula amanhã", texto: "Até 50 minutos e preparação simples" },
+  { valor: "avancado", titulo: "Quero um projeto avançado", texto: "Projetos com maior desafio técnico" },
+];
 
 /**
  * Um grupo de escolha única em que clicar de novo desmarca. É o comportamento
@@ -108,6 +117,7 @@ export function FiltroDePlanos() {
   const [conceito, setConceito] = useState<string | null>(null);
   const [makecode, setMakecode] = useState<string | null>(null);
   const [montagem, setMontagem] = useState<"interno" | "externo" | null>(null);
+  const [perfil, setPerfil] = useState<PerfilRapido | null>(null);
 
   const resultados = useMemo(
     () =>
@@ -118,6 +128,11 @@ export function FiltroDePlanos() {
         if (nivel && p.level !== nivel) return false;
         if (conceito && !p.concepts.includes(conceito)) return false;
         const guide = GUIDE_BY_ID.get(p.id);
+        if (perfil === "primeira-aula" && (p.level !== "iniciante" || guide?.wiring.kind === "externo")) return false;
+        if (perfil === "um-microbit" && (!p.needsMicrobit || !guide || guideUsesRadio(guide))) return false;
+        if (perfil === "sem-extras" && guide?.wiring.kind === "externo") return false;
+        if (perfil === "aula-amanha" && (p.duration > 50 || p.level !== "iniciante" || guide?.wiring.kind === "externo")) return false;
+        if (perfil === "avancado" && p.level !== "avancado") return false;
         if (makecode && !guide?.blocks.some((block) => block.category === makecode)) return false;
         if (montagem && guide?.wiring.kind !== montagem) return false;
         if (recurso === "sem-computador" && p.needsComputer) return false;
@@ -125,13 +140,25 @@ export function FiltroDePlanos() {
         if (recurso === "microbit" && !p.needsMicrobit) return false;
         return true;
       }),
-    [ano, tempo, turma, nivel, conceito, recurso, makecode, montagem],
+    [ano, tempo, turma, nivel, conceito, recurso, makecode, montagem, perfil],
   );
 
-  const algumFiltro = Boolean(ano || tempo || recurso || turma || nivel || conceito || makecode || montagem);
+  const algumFiltro = Boolean(ano || tempo || recurso || turma || nivel || conceito || makecode || montagem || perfil);
 
   return (
     <div>
+      <section className="mb-6">
+        <p className="label-mono text-purple">Escolha pela sua realidade</p>
+        <h2 className="mt-2 font-display text-[24px] font-extrabold">Não sabe qual filtro usar?</h2>
+        <p className="mt-2 max-w-[65ch] text-[12.5px] leading-relaxed text-navy/60">Escolha uma situação. A lista mostra somente aulas compatíveis; depois, se quiser, refine por ano e tempo.</p>
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+          {PERFIS_RAPIDOS.map((item) => {
+            const ativo = perfil === item.valor;
+            return <button key={item.valor} type="button" aria-pressed={ativo} onClick={() => setPerfil(ativo ? null : item.valor)} className={`min-h-[92px] rounded-card-sm border p-4 text-left transition ${ativo ? "border-cyan bg-cyan/10 shadow-card" : "border-navy/10 bg-white hover:border-cyan"}`}><strong className="block text-[13px] leading-tight">{item.titulo}</strong><span className="mt-2 block text-[11px] leading-relaxed text-navy/55">{item.texto}</span></button>;
+          })}
+        </div>
+      </section>
+
       {/* Os filtros viram um painel próprio e acompanham a rolagem: com doze
           planos a lista passa da altura da tela, e quem estava filtrando
           perdia os controles de vista justamente ao comparar os resultados. */}
@@ -194,6 +221,7 @@ export function FiltroDePlanos() {
               setConceito(null);
               setMakecode(null);
               setMontagem(null);
+              setPerfil(null);
             }}
             className="mt-4 min-h-[36px] font-sans text-[10.5px] font-bold uppercase tracking-[0.05em] text-navy underline"
           >

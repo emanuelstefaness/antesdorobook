@@ -10,8 +10,13 @@ export function generateStaticParams() {
   return LESSON_PLANS.map((plan) => ({ id: plan.id }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }): Metadata {
-  const plan = planoPorId(params.id);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const plan = planoPorId(id);
   if (!plan) return { title: `Plano não encontrado — ${BRAND.name}` };
 
   return {
@@ -20,8 +25,13 @@ export function generateMetadata({ params }: { params: { id: string } }): Metada
   };
 }
 
-export default function PlanoPage({ params }: { params: { id: string } }) {
-  const plan = planoPorId(params.id);
+export default async function PlanoPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const plan = planoPorId(id);
   if (!plan) notFound();
 
   const neighbors = recommendedNeighbors(plan.id);
