@@ -149,10 +149,7 @@ const CORE_LESSON_PLANS: LessonPlan[] = [
       "Prevê onde o robô vai parar antes de a fila ser executada",
     ],
     continuity: { label: "Simulador do tabuleiro", href: "/tabuleiro" },
-    relatedContent: [
-      { label: "Conceito: algoritmos", href: "/aprender/algoritmos" },
-      { label: "Simulador do tabuleiro", href: "/tabuleiro" },
-    ],
+    relatedContent: [{ label: "Conceito: algoritmos", href: "/aprender/algoritmos" }],
     image: null,
   },
   {
@@ -591,10 +588,7 @@ const CORE_LESSON_PLANS: LessonPlan[] = [
       "O aluno explica por que um cenário ficou impossível",
     ],
     continuity: { label: "Simulador do tabuleiro", href: "/tabuleiro" },
-    relatedContent: [
-      { label: "Conceito: teste e depuração", href: "/aprender/teste-e-depuracao" },
-      { label: "Simulador do tabuleiro", href: "/tabuleiro" },
-    ],
+    relatedContent: [{ label: "Conceito: teste e depuração", href: "/aprender/teste-e-depuracao" }],
     image: null,
   },
   {
