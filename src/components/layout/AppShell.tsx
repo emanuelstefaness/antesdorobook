@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar, MobileNavDrawer } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 /**
  * Casco da aplicação: sidebar fixa à esquerda no desktop, gaveta no celular,
@@ -12,8 +14,14 @@ import { Header } from "@/components/layout/Header";
  * continua server component).
  */
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
   const [recolhida, setRecolhida] = useState(false);
   const [menuAberto, setMenuAberto] = useState(false);
+
+  // A tela de login não mostra a navegação do site: quem ainda não entrou
+  // não tem o que fazer nela (o middleware bloqueia qualquer link mesmo
+  // assim), e o menu completo ali só distrai da única ação possível.
+  if (pathname === "/login") return <>{children}</>;
 
   return (
     <div className="app-frame flex min-h-dvh bg-cream">
@@ -22,6 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="app-content flex min-w-0 flex-1 flex-col overflow-x-hidden">
         <Header aoAbrirMenu={() => setMenuAberto(true)} />
         {children}
+        <Footer />
       </div>
     </div>
   );
