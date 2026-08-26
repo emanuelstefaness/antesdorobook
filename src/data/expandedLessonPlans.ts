@@ -133,7 +133,7 @@ export const EXTRA_LESSON_PLANS: LessonPlan[] = [
     commonError: "a comparação considera somente a quantidade de peças e ignora se a solução é compreensível.", projectId: "batalha-de-algoritmos",
   }),
   plano({
-    id: "robô-de-entregas-no-tabuleiro", title: "Robô de entregas", theme: "Otimização de rotas",
+    id: "robo-de-entregas-no-tabuleiro", title: "Robô de entregas", theme: "Otimização de rotas",
     objective: "Planejar uma rota que visite vários destinos e retorne à base com economia de comandos.",
     duration: 100, ageBands: ["4-5", "6-7", "8-9"], classSize: "16-30", level: "intermediario",
     concepts: ["decomposicao", "algoritmos"], materials: ["tabuleiro", "cartoes", "papel-e-lapis"],
