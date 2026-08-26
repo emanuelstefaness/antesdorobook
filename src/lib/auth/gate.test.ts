@@ -10,15 +10,15 @@ import {
 } from "./gate";
 import { sha256Hex } from "./sha256";
 
-const SENHA = "antesdorobo2026";
+const SENHA = "pensamentocomputacional";
 
 describe("normalizarSenha", () => {
   it("perdoa o que o teclado do celular faz sozinho", () => {
     // Maiúscula automática na primeira letra e espaço arrastado pelo colar.
-    expect(normalizarSenha("Antesdorobo2026")).toBe(SENHA);
-    expect(normalizarSenha("  antesdorobo2026  ")).toBe(SENHA);
-    expect(normalizarSenha("ANTESDOROBO2026")).toBe(SENHA);
-    expect(normalizarSenha(" AntesDoRobo2026\n")).toBe(SENHA);
+    expect(normalizarSenha("Pensamentocomputacional")).toBe(SENHA);
+    expect(normalizarSenha("  pensamentocomputacional  ")).toBe(SENHA);
+    expect(normalizarSenha("PENSAMENTOCOMPUTACIONAL")).toBe(SENHA);
+    expect(normalizarSenha(" PensamentoComputacional\n")).toBe(SENHA);
   });
 
   it("não mexe no meio da senha", () => {
@@ -31,16 +31,16 @@ describe("normalizarSenha", () => {
 describe("senhaCorreta", () => {
   it("aceita a senha combinada, com ou sem os deslizes de digitação", () => {
     expect(senhaCorreta(SENHA)).toBe(true);
-    expect(senhaCorreta("Antesdorobo2026")).toBe(true);
-    expect(senhaCorreta("  ANTESDOROBO2026 ")).toBe(true);
+    expect(senhaCorreta("Pensamentocomputacional")).toBe(true);
+    expect(senhaCorreta("  PENSAMENTOCOMPUTACIONAL ")).toBe(true);
   });
 
   it("recusa senha errada, vazia ou quase certa", () => {
     expect(senhaCorreta("")).toBe(false);
     expect(senhaCorreta("   ")).toBe(false);
-    expect(senhaCorreta("antesdorobo")).toBe(false);
-    expect(senhaCorreta("antesdorobo2025")).toBe(false);
-    expect(senhaCorreta("antes do robo 2026")).toBe(false);
+    expect(senhaCorreta("pensamento")).toBe(false);
+    expect(senhaCorreta("pensamentocomputacional2026")).toBe(false);
+    expect(senhaCorreta("pensamento computacional")).toBe(false);
     expect(senhaCorreta(HASH_DA_SENHA)).toBe(false);
   });
 

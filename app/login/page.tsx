@@ -17,17 +17,34 @@ export default async function LoginPage({ searchParams }: Props) {
   const houveErro = erro === "1";
 
   return (
-    <div className="grid min-h-[calc(100dvh-4rem)] place-items-center bg-cream px-5 py-16">
-      <div className="w-full max-w-[420px]">
-        <p className="label-mono text-navy/60">Acesso restrito</p>
+    <div className="relative grid min-h-dvh place-items-center overflow-hidden bg-navy px-5 py-16">
+      {/* Blobs desfocados atrás do cartão: o "turvo" que dá o clima de acesso
+          exclusivo. Cores e blur ficam só na camada de fundo — o cartão em si
+          usa .glass, a classe de vidro fosco que já existe no design system,
+          então nada aqui é um material novo. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-28 -top-28 h-[26rem] w-[26rem] rounded-full bg-cyan/25 blur-[110px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-32 top-1/3 h-[24rem] w-[24rem] rounded-full bg-purple/30 blur-[110px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 left-1/3 h-[22rem] w-[22rem] rounded-full bg-amber/20 blur-[110px]"
+      />
+
+      <div className="glass relative w-full max-w-[420px] rounded-card p-8 sm:p-10">
+        <p className="label-mono text-navy/50">Área exclusiva</p>
 
         <p className="mt-3 font-display text-3xl font-extrabold leading-none tracking-display text-navy">
           {BRAND.wordmark.first} {BRAND.wordmark.second}
         </p>
 
         <p className="mt-5 font-sans text-[15px] leading-relaxed text-navy/75">
-          Este material ainda está sendo preparado para os professores. Digite a senha combinada
-          para entrar.
+          Portal fechado, disponível só para professores convidados. Digite a senha combinada para
+          entrar.
         </p>
 
         <form action={entrar} className="mt-8">

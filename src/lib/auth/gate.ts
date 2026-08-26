@@ -15,10 +15,12 @@ import { sha256Hex } from "./sha256";
  * aluno, nota, ou qualquer coisa que precise mesmo ficar protegida: para isso
  * seria necessário um backend com autenticação de verdade.
  *
- * Hash de: antesdorobo2026
- * Para trocar a senha:  npm run senha -- "a nova senha"
+ * Hash de: pensamentocomputacional
+ * Para trocar a senha: gere o SHA-256 da nova senha (minúscula, sem espaço
+ * nas pontas) e substitua a constante abaixo — ex.: no Node,
+ * `crypto.createHash("sha256").update("a nova senha").digest("hex")`.
  */
-export const HASH_DA_SENHA = "bf8b61cd5196bd92da2d2059aa560790d0f57bb3bd5c25b827cd5928b240744f";
+export const HASH_DA_SENHA = "855cce35b5187c7046cffeaa0245b29b1b74a48b8dda51716baf1a79f1a40954";
 
 /**
  * O teclado do celular coloca maiúscula na primeira letra sozinho, e copiar e
