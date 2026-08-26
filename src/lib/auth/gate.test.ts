@@ -2,14 +2,18 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { KEYS, readJSON, writeJSON } from "@/lib/storage";
 import {
   HASH_DA_SENHA,
+  HASH_DA_SESSAO,
+  HASH_DO_LOGIN,
   acessoLiberado,
   liberarAcesso,
+  loginCorreto,
   normalizarSenha,
   senhaCorreta,
   trancarAcesso,
 } from "./gate";
 import { sha256Hex } from "./sha256";
 
+const LOGIN = "turvo2026";
 const SENHA = "pensamentocomputacional";
 
 describe("normalizarSenha", () => {
@@ -58,6 +62,33 @@ describe("senhaCorreta", () => {
   });
 });
 
+describe("loginCorreto", () => {
+  it("aceita o login combinado, com ou sem os deslizes de digitação", () => {
+    expect(loginCorreto(LOGIN)).toBe(true);
+    expect(loginCorreto("Turvo2026")).toBe(true);
+    expect(loginCorreto("  TURVO2026 ")).toBe(true);
+  });
+
+  it("recusa login errado, vazio ou quase certo", () => {
+    expect(loginCorreto("")).toBe(false);
+    expect(loginCorreto("   ")).toBe(false);
+    expect(loginCorreto("turvo")).toBe(false);
+    expect(loginCorreto("turvo2025")).toBe(false);
+    expect(loginCorreto(HASH_DO_LOGIN)).toBe(false);
+  });
+
+  it("a constante publicada é mesmo o hash do login", () => {
+    expect(HASH_DO_LOGIN).toBe(sha256Hex(LOGIN));
+    expect(HASH_DO_LOGIN).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it("login e senha usam hashes distintos", () => {
+    // Se os dois caíssem no mesmo hash por coincidência de implementação, a
+    // troca de um sozinho não faria sentido nenhum.
+    expect(HASH_DO_LOGIN).not.toBe(HASH_DA_SENHA);
+  });
+});
+
 describe("estado do acesso", () => {
   beforeEach(() => {
     window.localStorage.clear();
@@ -70,7 +101,7 @@ describe("estado do acesso", () => {
   it("libera e permanece liberado", () => {
     liberarAcesso();
     expect(acessoLiberado()).toBe(true);
-    expect(readJSON<string | null>(KEYS.acesso, null)).toBe(HASH_DA_SENHA);
+    expect(readJSON<string | null>(KEYS.acesso, null)).toBe(HASH_DA_SESSAO);
   });
 
   it("tranca de novo quando pedido", () => {
@@ -79,15 +110,15 @@ describe("estado do acesso", () => {
     expect(acessoLiberado()).toBe(false);
   });
 
-  it("um acesso antigo perde a validade quando a senha muda", () => {
-    // Simula quem entrou com a senha anterior: o valor guardado é o hash
-    // daquela senha, não um "true", então ele deixa de bater.
-    writeJSON(KEYS.acesso, sha256Hex("senha-antiga"));
+  it("um acesso antigo perde a validade quando o login ou a senha mudam", () => {
+    // Simula quem entrou com credenciais anteriores: o valor guardado é o
+    // hash daquele par, não um "true", então ele deixa de bater.
+    writeJSON(KEYS.acesso, `${sha256Hex("login-antigo")}:${sha256Hex("senha-antiga")}`);
     expect(acessoLiberado()).toBe(false);
   });
 
   it("lixo no armazenamento não abre o portão", () => {
-    for (const valor of [true, 1, "sim", { hash: HASH_DA_SENHA }, [HASH_DA_SENHA]]) {
+    for (const valor of [true, 1, "sim", { hash: HASH_DA_SESSAO }, [HASH_DA_SESSAO]]) {
       writeJSON(KEYS.acesso, valor);
       expect(acessoLiberado(), `${JSON.stringify(valor)} abriu o portão`).toBe(false);
     }

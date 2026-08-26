@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, GraduationCap } from "lucide-react";
 import { ChallengeRunner } from "@/components/board/ChallengeRunner";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -32,6 +34,13 @@ export default function TabuleiroPage() {
           <div className="relative aspect-[2/1] overflow-hidden rounded-card shadow-card"><Image unoptimized fill priority src="/assets/antes-do-robo/kit-tabuleiro-completo.png" alt="Kit completo do tabuleiro" className="object-cover"/></div>
         </div>
       </header>
+      <section className="mx-auto max-w-[1400px] px-5 pt-8 md:px-8">
+        <div className="grid items-center gap-5 rounded-card border-2 border-cyan/20 bg-white p-5 shadow-card md:grid-cols-[auto_1fr_auto] md:p-6">
+          <span className="flex h-12 w-12 items-center justify-center rounded-card-sm bg-cyan/14 text-cyan"><GraduationCap size={24}/></span>
+          <div><p className="label-mono text-cyan">Depois de aprender os comandos</p><h2 className="mt-1 font-display text-[21px] font-extrabold">Use o tabuleiro em Português, Matemática, História e outras áreas</h2><p className="mt-2 text-[12.5px] leading-relaxed text-navy/60">Abra 50 aplicações completas com cartas, mapa, respostas, falas e avaliação.</p></div>
+          <Link href="/tabuleiro-em-todas-as-areas" className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-pill bg-navy px-4 text-[11px] font-bold text-white">Explorar por área <ArrowRight size={14}/></Link>
+        </div>
+      </section>
       <ChallengeRunner />
     </>
   );

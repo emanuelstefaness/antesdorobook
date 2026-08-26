@@ -19,7 +19,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const [menuAberto, setMenuAberto] = useState(false);
 
   // A tela de login não mostra a navegação do site: quem ainda não entrou
-  // não tem o que fazer nela (o middleware bloqueia qualquer link mesmo
+  // não tem o que fazer nela (o proxy bloqueia qualquer link mesmo
   // assim), e o menu completo ali só distrai da única ação possível.
   if (pathname === "/login") return <>{children}</>;
 

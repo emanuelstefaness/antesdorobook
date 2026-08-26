@@ -211,7 +211,7 @@ export const PROJECTS: Project[] = [
     investigate: "como a placa percebe o gesto de agitar e como escolhe um número.", build: "combinar evento ao agitar, número aleatório e exibição.", test: "agitar vinte vezes e verificar se algum valor fica fora de 1 a 6.",
   }),
   projeto({
-    id: "semáforo-de-humor", title: "Semáforo de humor",
+    id: "semaforo-de-humor", title: "Semáforo de humor",
     summary: "Botões registram como a turma chega e a matriz mostra um resumo visual.",
     category: "microbit", level: "iniciante", duration: 50, ageBands: TODOS,
     materials: ["microbit", "computador"], concepts: ["entrada-processamento-e-saida", "abstracao"], component: "Botões A e B",

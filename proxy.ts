@@ -1,17 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { HASH_DA_SENHA } from "@/lib/auth/gate";
+import { HASH_DA_SESSAO } from "@/lib/auth/gate";
 
 const NOME_DO_COOKIE = "adr_sessao";
 
 /**
- * Guarda o site inteiro atrás do login. O cookie guarda o hash da senha
- * aceita (não um `true`): se a senha for trocada em @/lib/auth/gate, todo
- * mundo que já tinha entrado volta a ver a tela de login, sem precisar
- * invalidar sessão nenhuma na mão.
+ * Guarda o site inteiro atrás do login. O cookie guarda o hash do login+senha
+ * aceitos (não um `true`): se qualquer um dos dois for trocado em
+ * @/lib/auth/gate, todo mundo que já tinha entrado volta a ver a tela de
+ * login, sem precisar invalidar sessão nenhuma na mão.
  */
 export function proxy(request: NextRequest) {
   const cookie = request.cookies.get(NOME_DO_COOKIE)?.value;
-  if (cookie === HASH_DA_SENHA) return NextResponse.next();
+  if (cookie === HASH_DA_SESSAO) return NextResponse.next();
 
   const url = request.nextUrl.clone();
   url.pathname = "/login";

@@ -43,14 +43,30 @@ export default async function LoginPage({ searchParams }: Props) {
         </p>
 
         <p className="mt-5 font-sans text-[15px] leading-relaxed text-navy/75">
-          Portal fechado, disponível só para professores convidados. Digite a senha combinada para
-          entrar.
+          Portal fechado, disponível só para professores convidados. Digite o login e a senha
+          combinados para entrar.
         </p>
 
         <form action={entrar} className="mt-8">
           <input type="hidden" name="proximo" value={destino} />
 
-          <label htmlFor="senha-de-acesso" className="label-mono block text-navy/60">
+          <label htmlFor="login-de-acesso" className="label-mono block text-navy/60">
+            Login
+          </label>
+
+          <input
+            id="login-de-acesso"
+            name="login"
+            type="text"
+            autoComplete="username"
+            autoFocus
+            required
+            aria-describedby={houveErro ? "erro-de-acesso" : undefined}
+            aria-invalid={houveErro}
+            className="mt-2 min-h-[52px] w-full rounded-block border-2 border-navy bg-cream-hi px-4 font-sans text-[16px] text-navy"
+          />
+
+          <label htmlFor="senha-de-acesso" className="label-mono mt-5 block text-navy/60">
             Senha
           </label>
 
@@ -59,7 +75,6 @@ export default async function LoginPage({ searchParams }: Props) {
             name="senha"
             type="password"
             autoComplete="current-password"
-            autoFocus
             required
             aria-describedby={houveErro ? "erro-de-acesso" : undefined}
             aria-invalid={houveErro}
@@ -69,7 +84,7 @@ export default async function LoginPage({ searchParams }: Props) {
           <div id="erro-de-acesso" role="status" aria-live="polite" className="mt-3">
             {houveErro ? (
               <p className="rounded-block border-2 border-led bg-led/10 p-3 font-sans text-[13px] font-semibold leading-snug text-navy">
-                Senha incorreta. Confira com quem enviou o endereço.
+                Login ou senha incorretos. Confira com quem enviou o endereço.
               </p>
             ) : null}
           </div>

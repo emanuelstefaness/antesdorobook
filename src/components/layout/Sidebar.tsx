@@ -13,6 +13,7 @@ import {
   Cpu,
   Flag,
   Grid3x3,
+  GraduationCap,
   HelpCircle,
   Home,
   Menu,
@@ -50,6 +51,7 @@ const ICONES: Record<string, LucideIcon> = {
   favoritos: Star,
   aulas: Calendar,
   "caminho-aulas": BookOpenCheck,
+  "tabuleiro-areas": GraduationCap,
 };
 
 function Item({

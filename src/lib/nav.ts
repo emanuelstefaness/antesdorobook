@@ -22,6 +22,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { id: "todas-aulas", label: "Todas as aulas", href: "/planejar", short: "Todas as aulas" },
       { id: "praticar", label: "Atividades desplugadas", href: "/praticar", short: "Desplugadas" },
       { id: "tabuleiro", label: "Tabuleiro Antes do Robô", href: "/tabuleiro", short: "Tabuleiro" },
+      { id: "tabuleiro-areas", label: "Tabuleiro em todas as áreas", href: "/tabuleiro-em-todas-as-areas", short: "Tabuleiro por área" },
     ],
   },
   {
